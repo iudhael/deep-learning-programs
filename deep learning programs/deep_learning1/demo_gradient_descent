@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Aug 16 19:21:50 2022
+
+@author: judi
+"""
+
+if __name__=='__main__':
+    # fonction a minimiser
+    fc = lambda x, y: (3*x**2) + (x*y) + (5*y**2)
+    #definir les derivées partielles
+    partial_derivative_x = lambda x, y: (6*x) + y
+    partial_derivative_y = lambda x, y: (10*y) + x
+    #etat des variables
+    x = 10
+    y = -13
+    #learning rate
+    learning_rate = 0.1 
+    print("FC %s" % (fc(x,y)))
+    
+    #epoch --> periode minimisation 
+    """
+    periode pendant laquel on prend les gradients et on les soustrait a nos variables
+    pour modifier les variables pour la minimisation
+    """
+    for epoch in range(0,20):
+        #calcule des gradients  
+        x_gradient = partial_derivative_x(x, y)
+        y_gradient = partial_derivative_y(x, y)
+        # application de la descente de gradient
+        x = x - learning_rate * x_gradient
+        y = y - learning_rate * y_gradient
+        # afficher l'evolution de la fonction 
+        print("FC %s" % (fc(x,y)))
+    
+    #valeur final des variables
+    print("")
+    
+    print("x = %s" % x)
+    print("y = %s" % y)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

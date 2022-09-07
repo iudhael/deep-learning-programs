@@ -1,0 +1,184 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Aug 15 21:34:34 2022
+
+@author: judi
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def init_variables():
+    """
+        cette fonction vas initialiser (les poids, bias)
+    """
+
+    weights = np.random.normal(size = 2)
+    bias = 0
+    return weights, bias
+
+
+def derivative_activation(z):
+    """
+    derivé de la sigmoid(x) = sigmoid(x) * (1 - sigmoid(x))
+
+    """
+    return activation(z) * (1 - activation(z))
+    
+    
+
+def get_dataset():
+    """
+        Method used to generate the dataset
+    """
+
+    # Nombre d'entre ( personne ) par classe (soit en bonne santé, soit pas en bonne santé)
+    row_per_class = 100
+    # generé les entrés
+    sick = np.random.randn(row_per_class, 2) + np.array([-2, -2])
+    healthy = np.random.randn(row_per_class, 2) + np.array([2, 2])
+
+    #print(sick)
+    #print(healthy)
+
+    features = np.vstack([sick, healthy])
+    #target pour dire si cette personne est malade (0) ou  pas (1)
+    targets = np.concatenate((np.zeros(row_per_class), np.zeros(row_per_class) + 1))
+
+    #print(features)
+    #print(features.shape)
+    #print(targets)
+
+
+    return features, targets
+
+def  pre_activation(features, weights, bias):
+    """
+        Calcul de la pre activation
+    """
+    return np.dot(features, weights) + bias
+
+
+def activation(z):
+    """
+        calcul de l'activation
+    """
+    return  1 / (1 + np.exp(-z))
+def predict(features, weights, bias):
+    """
+    
+    """
+    z = pre_activation(features, weights, bias)
+    y = activation(z)
+    #print(np.around(y))
+    return np.around(y)
+    
+
+def cost(predictions, targets):
+    """
+    retourne la moyenne de toute les erreures E = ((predictions - targets)**2)/2
+    plus la moyenne sera basse plus l'erreur sera basse 
+    """
+    return np.mean((predictions-targets)**2) * 100
+
+  
+
+def train(features, targets, weights, bias):
+    """
+    
+    """
+    #definir le nbre epoque d'entrainement qu'on veut faire
+    epochs = 100
+    learning_rate = 0.1 # vitesse d'apprentissage
+    
+    # afficher notre accuracy  : notre precision donne une precision du pourcentage de reussite
+    predictions =  predict(features, weights, bias) #faire une prediction soit 0 soit 1
+    
+    #print(predictions == targets)
+    print("Accuracy ", np.mean(predictions == targets) * 100, "%")
+    
+    
+    
+    
+    for epoch in range(epochs):
+        #toute les 10 epochs on affichera l'erreur total actuel
+        if epoch % 10 == 0:
+            #recuperer les predictions
+            predictions = activation(pre_activation(features, weights, bias))
+            #print(predictions)
+            print("Cost = %s" % cost(predictions, targets))
+            
+            """
+            initialiser les gradients au debut a 0 puis  mettre a jours nos gradients pour chaque données
+            pour avoir a la fin une moyenne de toute les  gradient qui ont ete indiquer pour savoir  dans quel sens 
+            on doit modifier nos variables
+            """
+            
+            weights_gradients = np.zeros(weights.shape)
+            #print(weights_gradients)
+            bias_gradient = 0
+            
+            # itérrer dans toutes nos données
+            for feature, target in zip(features, targets):
+                #calcul de la prediction
+                z = pre_activation(feature, weights, bias)
+                y = activation(z)
+                #print(y)
+                #mettre a jour notre gradient
+                #print(feature)
+                weights_gradients += (y - target) * derivative_activation(z) * feature
+                #print(weights_gradients)
+                
+                bias_gradient  += (y - target) * derivative_activation(z)
+                #print(bias_gradient)
+                
+                #mettre a jour les variables
+                
+                weights = weights - learning_rate * weights_gradients
+                bias = bias -- learning_rate * bias_gradient
+                
+            # afficher notre accuracy  : notre precision donne une precision du pourcentage de reussite
+            predictions =  predict(features, weights, bias) #faire une prediction soit 0 soit 1
+            print("Accuracy ", np.mean(predictions == targets) * 100, "%")
+            
+            # plot points
+            plt.scatter(features[:, 0], features[:, 1], s=40, c=targets, cmap=plt.cm.Spectral)
+            plt.show()
+            
+            
+            
+            
+            
+            
+            
+
+
+
+
+
+
+
+if __name__ == '__main__':
+    # dataset
+    features, targets = get_dataset()
+    # variables
+    weights, bias = init_variables()
+    # calculer la pré-activation
+    z = pre_activation(features, weights, bias)
+    #print(features)
+    #print(weights)
+    #print(bias)
+    #print(z)
+    # calculer l'activation
+    a = activation(z)
+    #print(z)
+    #print(a)
+    train(features, targets, weights, bias)
+    pass
+
+
+
+
+
+
